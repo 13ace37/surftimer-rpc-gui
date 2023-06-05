@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "surftimer-rpc-gui", "surftimer-rpc-gui.csproj", "{C2EC2F91-3F16-41E8-8997-D4047E94D88E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2EC2F91-3F16-41E8-8997-D4047E94D88E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2EC2F91-3F16-41E8-8997-D4047E94D88E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2EC2F91-3F16-41E8-8997-D4047E94D88E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2EC2F91-3F16-41E8-8997-D4047E94D88E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {864B0497-7B6C-4AE2-9205-900F4D6CFD3C}
+	EndGlobalSection
+EndGlobal
