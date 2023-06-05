@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace surftimer_rpc_gui
 {
-    internal static class Program
+    internal static class SurfTimerRPC
     {
         /// <summary>
         /// The main entry point for the application.
@@ -16,7 +13,7 @@ namespace surftimer_rpc_gui
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new SurfTimerRPC_Form());
         }
     }
 }
