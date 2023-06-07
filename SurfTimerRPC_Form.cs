@@ -124,7 +124,7 @@ namespace surftimer_rpc_gui
 
 
             surfTimerRPC_Client.Client.SetPresence(
-                formatRichPresence(presenceLines[0], presenceLines[1], "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
+                formatRichPresence(presenceLines[0], presenceLines[1], "logo", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
             );
 
         }
@@ -132,14 +132,14 @@ namespace surftimer_rpc_gui
         private void handleGSLNonSurfMap(GameState gameState)
         {
             surfTimerRPC_Client.Client.SetPresence(
-                formatRichPresence($"on {gameState.Map.Name}", "not surfing", "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
+                formatRichPresence($"on {gameState.Map.Name}", "not surfing", "logo", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
             );
         }
 
         private void handleGSLNoMap(GameState gameState)
         {
             surfTimerRPC_Client.Client.SetPresence(
-                formatRichPresence("in main menu", null, "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
+                formatRichPresence("in main menu", null, "logo", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
             );
         }
 
@@ -165,7 +165,7 @@ namespace surftimer_rpc_gui
 
         private SurfTimerRPC_Form initializeRPC()
         {
-            surfTimerRPC_Client.Client.SetPresence(formatRichPresence($"SurfTimer RPC v{GetAssemblyVersion()}", "just started", "icon", null, null, null));
+            surfTimerRPC_Client.Client.SetPresence(formatRichPresence($"SurfTimer RPC v{GetAssemblyVersion()}", "just started", "logo", null, null, null));
 
             return this;
         }
@@ -269,6 +269,8 @@ namespace surftimer_rpc_gui
                 lb_cgiLastInfo.Text = "CGI Last Info: " + diffInSecondsString;
 
             this.updateCGIStatus(diffInSeconds < 1);
+
+            if (diffInSeconds > 10) this.initializeRPC();
 
             return this;
         }
