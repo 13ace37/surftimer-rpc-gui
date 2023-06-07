@@ -1,21 +1,12 @@
 ﻿using CSGSI;
 using DiscordRPC;
+using surftimer_rpc_gui.Properties;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
-using System.Xml.Linq;
-using static System.Windows.Forms.AxHost;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
+
 
 namespace surftimer_rpc_gui
 {
@@ -26,6 +17,11 @@ namespace surftimer_rpc_gui
         private SurfTimerRPC_GSL surfTimerRPC_GSL;
 
         private DateTime surfTimerRPC_GSL_lastPackage = new DateTime(1970, 1 ,1);
+
+        private IDictionary<string, string> modules;
+        private ListBox[,] lbx_moduleSelectors;
+
+        private int[,] lbx_moduleSelectedIndexes;
 
         public SurfTimerRPC_Form()
         {
@@ -81,6 +77,9 @@ namespace surftimer_rpc_gui
             int score = gameState.Player.MatchStats.Score * -1;
             string scoreText = score >= 99999 ? "Unranked" : score.ToString();
 
+            bool spectatingReplayBot = (scoreText == "Unranked" && gameState.Player.Clan.Contains("Replay"));
+            scoreText = spectatingReplayBot ? gameState.Player.Clan : scoreText;
+
             // Map Progress - Assists (%)
             int mapProgress = gameState.Player.MatchStats.Assists;
             string mapProgressText = mapProgress.ToString() + "%";
@@ -99,16 +98,39 @@ namespace surftimer_rpc_gui
 
             // State
             string state = gameState.Provider.SteamID == gameState.Player.SteamID ? "surfing" : "spectating";
+            state = spectatingReplayBot ? "watching replay" : state;
 
             // User
             string userName = gameState.Player.Name;
 
-            label1.Text = "User: " + userName + "\nTimer: " + timerText + "\nRank: " + scoreText + "\nMap Progress: " + mapProgressText + "\nServer Progress: " + serverProgressText + "\nTitle: " + clantagText + "\nMap: " + mapText + "\nState: " + state;
+
+            // Modules
+            modules["State"] = $"{state} on {mapText}";
+            modules["Timer"] = $"Timer: {timerText}";
+            modules["Map"] = mapText;
+            modules["Server Rank/Replay Bot"] = spectatingReplayBot ? gameState.Player.Clan : $"S-Rank: {scoreText}";
+            modules["Map Completion"] = mapProgressText;
+            modules["Server Completion"] = serverProgressText;
+
+            string[,] presenceModules = new string[2,2];
+            for (int i = 0; i < 2; i++)
+                for (int j = 0; j < 2; j++)
+                    presenceModules[i,j] = modules[lbx_moduleSelectors[i, j].GetItemText(lbx_moduleSelectors[i, j].SelectedItem)];
+
+
+            string[] presenceLines = new string[2];
+            presenceLines[0] = presenceModules[0,1] == "" ? $"{presenceModules[0,0]}" : $"{presenceModules[0,0]} | {presenceModules[0,1]}";
+            presenceLines[1] = presenceModules[1,1] == "" ? $"{presenceModules[1,0]}" : $"{presenceModules[1,0]} | {presenceModules[1,1]}";
+
+
+            surfTimerRPC_Client.Client.SetPresence(
+                formatRichPresence(presenceLines[0], presenceLines[1], "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
+            );
+
         }
+
         private void handleGSLNonSurfMap(GameState gameState)
         {
-            label1.Text = "not surfing";
-            
             surfTimerRPC_Client.Client.SetPresence(
                 formatRichPresence($"on {gameState.Map.Name}", "not surfing", "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
             );
@@ -116,8 +138,6 @@ namespace surftimer_rpc_gui
 
         private void handleGSLNoMap(GameState gameState)
         {
-            label1.Text = "in main menu";
-
             surfTimerRPC_Client.Client.SetPresence(
                 formatRichPresence("in main menu", null, "icon", null, $"{gameState.Player.Clan} {gameState.Player.Name}", null)
             );
@@ -172,10 +192,50 @@ namespace surftimer_rpc_gui
             return this;
         }
 
+        private SurfTimerRPC_Form initializeModules()
+        {
+            modules = new Dictionary<string, string>();
+
+            modules.Clear();
+            modules.Add("", "");
+            modules.Add("State", "");
+            modules.Add("Timer", "");
+            modules.Add("Map", "");
+            modules.Add("Server Rank/Replay Bot", "");
+            modules.Add("Map Completion", "");
+            modules.Add("Server Completion", "");
+
+            lbx_moduleSelectors = new ListBox[2, 2];
+            lbx_moduleSelectors[0, 0] = lbx_modules0;
+            lbx_moduleSelectors[0, 1] = lbx_modules1;
+            lbx_moduleSelectors[1, 0] = lbx_modules2;
+            lbx_moduleSelectors[1, 1] = lbx_modules3;
+
+            lbx_moduleSelectedIndexes = new int[2, 2];
+            lbx_moduleSelectedIndexes[0, 0] = Settings.Default.lbx_modules0;
+            lbx_moduleSelectedIndexes[0, 1] = Settings.Default.lbx_modules1;
+            lbx_moduleSelectedIndexes[1, 0] = Settings.Default.lbx_modules2;
+            lbx_moduleSelectedIndexes[1, 1] = Settings.Default.lbx_modules3;
+
+            for (int i = 0; i < 2; i++)
+                for(int j = 0; j < 2; j++)
+                {
+                    lbx_moduleSelectors[i,j].Items.Clear();
+                    foreach (KeyValuePair<string, string> module in modules)
+                        lbx_moduleSelectors[i, j].Items.Add(module.Key);
+
+                    lbx_moduleSelectors[i, j].SelectedIndex = lbx_moduleSelectedIndexes[i, j];
+                }
+            
+
+            return this;
+        }
+
         private SurfTimerRPC_Form initializeForm()
         {
             this.initializeFormTitle()
                 .initializeFormElements()
+                .initializeModules()
                 ;
 
             return this;
@@ -201,7 +261,7 @@ namespace surftimer_rpc_gui
         private SurfTimerRPC_Form updateCGITime()
         {
             double diffInSeconds = (DateTime.Now - surfTimerRPC_GSL_lastPackage).TotalSeconds;
-            string diffInSecondsString = diffInSeconds.ToString("0.0s");
+            string diffInSecondsString = diffInSeconds > 10 ? ">10.0s" : diffInSeconds.ToString("0.0s");
 
             if (lb_cgiLastInfo.InvokeRequired)
                 lb_cgiLastInfo.Invoke(new MethodInvoker(delegate { lb_cgiLastInfo.Text = "CGI Last Info: " + diffInSecondsString; }));
@@ -228,5 +288,19 @@ namespace surftimer_rpc_gui
             return this;
         }
 
+        private void lbx_modulesChangeIndex(object sender, EventArgs e)
+        {
+            Settings.Default.lbx_modules0 = lbx_modules0.SelectedIndex;
+            Settings.Default.lbx_modules1 = lbx_modules1.SelectedIndex;
+            Settings.Default.lbx_modules2 = lbx_modules2.SelectedIndex;
+            Settings.Default.lbx_modules3 = lbx_modules3.SelectedIndex;
+            Settings.Default.Save();
+        }
+
+        private void SurfTimerRPC_Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            surfTimerRPC_Client.Client.Dispose();
+            surfTimerRPC_GSL.GSL.Stop();
+        }
     }
 }
