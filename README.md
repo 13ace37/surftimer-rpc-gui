@@ -43,3 +43,14 @@ You can choose from seven different data values to display within the defined mo
 | **Server Rank**   | Shows your rank on the server. If you are spectating, it displays the name of the replay bot.                           | "S-Rank: 150" | "S-Rank: Unranked" or "BONUS Replay"|
 | **Map Completion**| Indicates the completion percentage of the current map you are surfing on.                                              | "50%"                                          |
 | **Server Completion**| Displays the completion percentage of the entire servers maps.                                                       | "75%"                                          |
+
+## Usage
+
+
+1. Go to the [release page](https://github.com/13ace37/surftimer-rpc-gui/releases/) and download the [latest release](https://github.com/13ace37/surftimer-rpc-gui/releases/latest)!
+2. Open the application.
+    - If you are opening the application for the first time, please start CS:GO after launching the application. The application requires a config file in the cfg folder, which will be added automatically when you start CS:GO after launching the application. If you have already started CS:GO, you will need to restart CS:GO after the CGI Config light turns green.
+3. Launch CS:GO
+4. Modify the modules to your liking
+5. Make sure you enable presence in Discord (Settings => Activity Privacy => "Show current activity as status message")
+6. Enjoy your SurfTimer information displayed in Discord
