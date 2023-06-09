@@ -37,6 +37,8 @@
             this.lbx_modules1 = new System.Windows.Forms.ListBox();
             this.lbx_modules2 = new System.Windows.Forms.ListBox();
             this.lbx_modules3 = new System.Windows.Forms.ListBox();
+            this.lb_cgiConfig = new System.Windows.Forms.Label();
+            this.pn_cgiConfigStatus = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // pn_rpcStatus
@@ -125,12 +127,33 @@
             this.lbx_modules3.TabIndex = 8;
             this.lbx_modules3.SelectedIndexChanged += new System.EventHandler(this.lbx_modulesChangeIndex);
             // 
+            // lb_cgiConfig
+            // 
+            this.lb_cgiConfig.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.lb_cgiConfig.AutoSize = true;
+            this.lb_cgiConfig.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(233)))), ((int)(((byte)(240)))));
+            this.lb_cgiConfig.Location = new System.Drawing.Point(237, 11);
+            this.lb_cgiConfig.Name = "lb_cgiConfig";
+            this.lb_cgiConfig.Size = new System.Drawing.Size(58, 13);
+            this.lb_cgiConfig.TabIndex = 10;
+            this.lb_cgiConfig.Text = "CGI Config";
+            // 
+            // pn_cgiConfigStatus
+            // 
+            this.pn_cgiConfigStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(52)))), ((int)(((byte)(64)))));
+            this.pn_cgiConfigStatus.Location = new System.Drawing.Point(221, 12);
+            this.pn_cgiConfigStatus.Name = "pn_cgiConfigStatus";
+            this.pn_cgiConfigStatus.Size = new System.Drawing.Size(10, 10);
+            this.pn_cgiConfigStatus.TabIndex = 9;
+            // 
             // SurfTimerRPC_Form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(52)))), ((int)(((byte)(64)))));
             this.ClientSize = new System.Drawing.Size(404, 230);
+            this.Controls.Add(this.lb_cgiConfig);
+            this.Controls.Add(this.pn_cgiConfigStatus);
             this.Controls.Add(this.lbx_modules3);
             this.Controls.Add(this.lbx_modules2);
             this.Controls.Add(this.lbx_modules1);
@@ -163,6 +186,8 @@
         private System.Windows.Forms.ListBox lbx_modules1;
         private System.Windows.Forms.ListBox lbx_modules2;
         private System.Windows.Forms.ListBox lbx_modules3;
+        private System.Windows.Forms.Label lb_cgiConfig;
+        private System.Windows.Forms.Panel pn_cgiConfigStatus;
     }
 }
 

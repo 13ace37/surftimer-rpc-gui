@@ -3,7 +3,11 @@ using DiscordRPC;
 using surftimer_rpc_gui.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
 
@@ -22,6 +26,10 @@ namespace surftimer_rpc_gui
         private ListBox[,] lbx_moduleSelectors;
 
         private int[,] lbx_moduleSelectedIndexes;
+
+        private string cgiConfigPath;
+
+        private bool csgoNotOpenedWarningShowed = false;
 
         public SurfTimerRPC_Form()
         {
@@ -165,6 +173,8 @@ namespace surftimer_rpc_gui
 
         private SurfTimerRPC_Form initializeRPC()
         {
+            if (surfTimerRPC_Client == null) return this;
+
             surfTimerRPC_Client.Client.SetPresence(formatRichPresence($"SurfTimer RPC v{GetAssemblyVersion()}", "just started", "logo", null, null, null));
 
             return this;
@@ -281,11 +291,68 @@ namespace surftimer_rpc_gui
             return this;
         }
 
+        private SurfTimerRPC_Form updateCGIConfig()
+        {
+#nullable enable
+            Process? process = Process.GetProcessesByName("csgo").FirstOrDefault();
+            if (process == null)
+            {
+                if (!csgoNotOpenedWarningShowed) MessageBox.Show("Please start csgo!");
+                csgoNotOpenedWarningShowed = true;
+                System.Timers.Timer t = new System.Timers.Timer(10000);
+                t.Elapsed += (Object source, ElapsedEventArgs e) =>
+                {
+                    this.updateCGIConfig();
+                };
+                t.Start();
+                return this;
+            }
+#nullable disable
+            string path = process.MainModule.FileName;
+
+            this.checkCGIConfig(path);
+
+
+            return this;
+        }
+
+        private SurfTimerRPC_Form checkCGIConfig(string path)
+        {
+
+            cgiConfigPath = Path.Combine(Path.GetDirectoryName(path), "csgo", "cfg", "gamestate_integration_surf.cfg");
+            bool configExists = File.Exists(cgiConfigPath);
+            updateCGIConfigStatus(configExists);
+
+            if (!configExists) createCGIConfig(); 
+
+            return this;
+        }
+
+        private SurfTimerRPC_Form createCGIConfig()
+        {
+            if (cgiConfigPath == null) return this;
+
+            string config = "\"surf\"\n{\n \"uri\" \"http://localhost:23251/\"\n \"timeout\" \"5.0\"\n \"buffer\"  \"0.1\"\n \"throttle\" \"0.1\"\n \"heartbeat\" \"0.5\"\n \"data\"\n {\n   \"provider\"            \"1\"\n   \"map\"                 \"1\"\n   \"round\"               \"1\"\n   \"player_id\"           \"1\"\n   \"player_state\"        \"1\"\n   \"player_weapons\"      \"1\"\n   \"player_match_stats\"  \"1\"\n }\n}\n";
+            File.WriteAllText(cgiConfigPath, config);
+
+            updateCGIConfig();
+
+            return this;
+        }
+
+        private SurfTimerRPC_Form updateCGIConfigStatus(bool status)
+        {
+            pn_cgiConfigStatus.BackColor = status ? Color.FromArgb(255, 163, 190, 140) : Color.FromArgb(255, 191, 97, 106);
+            return this;
+        }
+
         private SurfTimerRPC_Form initializeFormElements()
         {
             this.updateRPCStatus(false)
                 .updateCGIStatus(false)
+                .updateCGIConfigStatus(false)
                 .updateCGITime()
+                .updateCGIConfig()
                 ;
             return this;
         }
